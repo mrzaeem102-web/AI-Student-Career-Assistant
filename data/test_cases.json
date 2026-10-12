@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "category": "academic",
+    "prompt": "Explain object-oriented programming to a beginner.",
+    "expected": [
+      "simple definition",
+      "example",
+      "key concepts"
+    ]
+  },
+  {
+    "id": "TC002",
+    "category": "study_planning",
+    "prompt": "Create a seven-day study plan for a university student.",
+    "expected": [
+      "seven days",
+      "study sessions",
+      "breaks"
+    ]
+  },
+  {
+    "id": "TC003",
+    "category": "career",
+    "prompt": "Give me five beginner-friendly AI internship interview questions.",
+    "expected": [
+      "five questions",
+      "AI-related topics",
+      "beginner-friendly"
+    ]
+  },
+  {
+    "id": "TC004",
+    "category": "professional_writing",
+    "prompt": "Draft a polite email asking about an internship application.",
+    "expected": [
+      "subject",
+      "polite greeting",
+      "clear request"
+    ]
+  },
+  {
+    "id": "TC005",
+    "category": "cv_review",
+    "prompt": "Suggest ways to improve a student CV without inventing experience.",
+    "expected": [
+      "actionable suggestions",
+      "honest representation",
+      "clear formatting"
+    ]
+  }
+]
