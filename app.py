@@ -114,6 +114,13 @@ if prompt:
 
                     st.markdown(answer)
 
+                    st.download_button(
+                        label="Download answer",
+                        data=answer,
+                        file_name="student_assistant_answer.txt",
+                        mime="text/plain",
+                    )
+
             st.session_state.messages.append(
                 {"role": "assistant", "content": answer}
             )
