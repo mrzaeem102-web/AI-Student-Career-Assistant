@@ -332,10 +332,17 @@ if prompt:
         st.markdown(prompt)
 
     api_key = os.getenv("GROQ_API_KEY")
+
+    if not api_key:
+        try:
+            api_key = st.secrets["GROQ_API_KEY"]
+        except (KeyError, FileNotFoundError):
+            api_key = None
+
     model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
     if not api_key:
-        st.error("Groq API key not found. Check your local .env file.")
+        st.error("Groq API key not found. Add GROQ_API_KEY to Streamlit Cloud Secrets.")
     else:
         try:
             client = OpenAI(
