@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#171717">
+<title>AI Student & Career Assistant</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#242424;background:#f7f7f8}
+*{box-sizing:border-box}
+body{margin:0}
+header{background:#171717;color:white;padding:16px 6%;display:flex;align-items:center;gap:14px}
+header img{width:48px;height:48px;object-fit:contain;border-radius:10px}
+header h1{font-size:18px;margin:0}
+header p{font-size:12px;color:#c9c9c9;margin:5px 0 0}
+main{max-width:900px;margin:36px auto;padding:0 18px}
+.intro{text-align:center;margin-bottom:28px}
+.intro h2{font-size:clamp(25px,5vw,36px);margin:0 0 10px}
+.intro p{color:#666;line-height:1.6}
+.features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.feature{background:white;border:1px solid #e8e8e8;border-radius:13px;padding:17px;text-align:left;cursor:pointer;font:inherit;transition:.2s}
+.feature:hover,.feature.active{border-color:#f58232;background:#fff8f2}
+.feature strong{display:block;margin:7px 0}
+.feature span{font-size:13px;color:#666}
+.panel{background:white;border:1px solid #e8e8e8;border-radius:15px;margin-top:22px;padding:20px}
+#messages{min-height:110px;max-height:420px;overflow-y:auto}
+.msg{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;padding:13px 15px;border-radius:11px;margin:10px 0;background:#f4f4f5}
+.msg.user{background:#fff1e6}
+form{display:grid;gap:12px;margin-top:14px}
+textarea{width:100%;resize:vertical;min-height:100px;border:1px solid #ddd;border-radius:10px;padding:13px;font:inherit}
+button.send{background:#f58232;color:white;border:0;border-radius:9px;padding:13px 18px;font-weight:700;cursor:pointer}
+button.send:hover{background:#e96e1d}
+button:disabled{opacity:.55;cursor:wait}
+#status{color:#666;font-size:13px;min-height:20px}
+footer{text-align:center;color:#777;font-size:12px;padding:26px}
+@media(max-width:520px){.features{grid-template-columns:1fr}main{margin-top:24px}.panel{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+<img src="/logo.png" alt="Assistant logo">
+<div><h1>AI Student & Career Assistant</h1>
+<p>Your companion for learning and career preparation</p></div>
+</header>
+<main>
+<section class="intro">
+<h2>Learn smarter. Plan better. Grow further.</h2>
+<p>Choose a feature and ask your AI assistant for personalized guidance.</p>
+</section>
+<section class="features" aria-label="Assistant features">
+<button class="feature active" data-task="Academic Learning">
+📚 <strong>Academic Learning</strong><span>Understand concepts with step-by-step explanations.</span>
+</button>
+<button class="feature" data-task="CV Improvement">
+📄 <strong>CV Improvement</strong><span>Improve your CV honestly and professionally.</span>
+</button>
+<button class="feature" data-task="Study Planning">
+📅 <strong>Study Planning</strong><span>Build a realistic study schedule and priorities.</span>
+</button>
+<button class="feature" data-task="Interview Preparation">
+🎤 <strong>Interview Preparation</strong><span>Practice questions and improve your answers.</span>
+</button>
+</section>
+<section class="panel">
+<h2 id="task-title">📚 Academic Learning</h2>
+<div id="messages" aria-live="polite">
+<div class="msg">Hello! 👋 I'm your AI Student & Career Assistant. What would you like help with today?</div>
+</div>
+<form id="chat-form">
+<textarea id="question" maxlength="12000" required placeholder="Type your question here..."></textarea>
+<button class="send" id="send" type="submit">Send message</button>
+<div id="status" role="status"></div>
+</form>
+</section>
+</main>
+<footer>AI-generated responses may be incorrect. Verify important information.</footer>
+<script>
+const features = document.querySelectorAll(".feature");
+const title = document.querySelector("#task-title");
+const messages = document.querySelector("#messages");
+const form = document.querySelector("#chat-form");
+const question = document.querySelector("#question");
+const send = document.querySelector("#send");
+const status = document.querySelector("#status");
+let task = "Academic Learning";
+let history = [];
+
+features.forEach(button => button.addEventListener("click", () => {
+  features.forEach(item => item.classList.remove("active"));
+  button.classList.add("active");
+  task = button.dataset.task;
+  title.textContent = button.textContent.trim();
+}));
+
+function addMessage(role, text) {
+  const div = document.createElement("div");
+  div.className = "msg " + role;
+  div.textContent = (role === "user" ? "You: " : "Assistant: ") + text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+form.addEventListener("submit", async event => {
+  event.preventDefault();
+  const message = question.value.trim();
+  if (!message || send.disabled) return;
+
+  addMessage("user", message);
+  question.value = "";
+  send.disabled = true;
+  status.textContent = "Preparing your answer...";
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({task, message, history})
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Request failed.");
+    addMessage("assistant", data.answer);
+    history.push({role: "user", content: message});
+    history.push({role: "assistant", content: data.answer});
+    history = history.slice(-10);
+    status.textContent = "";
+  } catch (error) {
+    status.textContent = error.message || "Could not reach the assistant.";
+  } finally {
+    send.disabled = false;
+    question.focus();
+  }
+});
+</script>
+</body>
+</html>

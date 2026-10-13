@@ -5,3 +5,13 @@ __pycache__/
 .streamlit/secrets.toml
 .pytest_cache/
 .DS_Store
+
+# Local development backups
+app.py.backup
+app.py.*.backup
+app.py.before-*
+app.py.dark-backup
+app.py.light-backup
+logo_backup.png
+requirements-lock.txt
+vercel_app/
